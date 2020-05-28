@@ -44,7 +44,7 @@ def counter_reset(label):
     counter = 0
     label.config(text=str(counter))
 
-
+# Making Generation labels to be used as the counter
 generation_part1 = Label(frame6, text = "Generation#", font=('Georgia', 16))
 
 generation_part2 = Label(frame6, text = "Generation#", font=('Georgia', 16))
