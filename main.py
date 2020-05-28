@@ -21,16 +21,33 @@ frame1.pack()
 frame3 = Frame(frame1)
 frame3.pack(side = LEFT, fill=BOTH, padx=10)
 
-# Generation Counter
-Generation = Label(frame3, text = f"Generation # {eight}", font=('Georgia', 16))
-Generation.pack()
-
-'''+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++'''
-
+'''++++++++++++++++++++++++++++++++++Main Game of Life Start++++++++++++++++++++++++++++++++++++'''
+# Main Game Canvas
 canvas = Canvas(frame3)
-canvas.pack()
 
-speed = 0
+# Generation counter frame
+frame6 = Frame(frame3)
+frame6.pack()
+
+def counter_label(label):
+    '''Counts up while main game loop is running'''
+    counter = 0
+    def count():
+        global counter
+        counter += 1
+        label.config(text=str(counter))
+    count()
+
+def counter_reset(label):
+    '''Resets the counter when the reset button is pressed'''
+    global counter
+    counter = 0
+    label.config(text=str(counter))
+
+
+generation_part1 = Label(frame6, text = "Generation#", font=('Georgia', 16))
+
+generation_part2 = Label(frame6, text = "Generation#", font=('Georgia', 16))
 
 class Cell:
     def __init__(self, x, y, i, j):
@@ -47,6 +64,7 @@ class Cell:
 
     def switchStatus(self):
         self.isAlive = not self.isAlive
+
 
 def create_grid():
     """This function creates the board on which the game will take place"""
@@ -66,6 +84,7 @@ def create_grid():
             x += 10
         x = 10
         y += 10
+    counter_reset(generation_part2)
 
 
 def find_rect_coordinates(x, y):
@@ -99,8 +118,8 @@ def paint_grid():
                 x, y = j.pos_matrix
                 # print(x, y)
                 if j.nextStatus:
-                    canvas.itemconfig(rectangles[x][y], fill="black")
-                    # canvas.itemconfig(rectangles[x][y], fill=choice(COLORS))
+                    # canvas.itemconfig(rectangles[x][y], fill="black")
+                    canvas.itemconfig(rectangles[x][y], fill=choice(COLORS))
                     # print("changed", j.pos_matrix, "from dead to alive")
                 else:
                     canvas.itemconfig(rectangles[x][y], fill="white")
@@ -131,7 +150,6 @@ def changeInStatus(cell):
 
 
 def begin_game():
-    global speed
     for i in grid:
         for j in i:
             if changeInStatus(j):
@@ -140,26 +158,33 @@ def begin_game():
             else:
                 j.nextStatus = j.isAlive
     paint_grid()
+    counter_label(generation_part2)
     global begin_id
     begin_id = root.after(200, begin_game)
 
 
 def stop_game():
-    root.after_cancel(begin_id)    
+    root.after_cancel(begin_id)  
 
 create_grid()
 canvas.bind("<Button-1>", change_colour_on_click)
 
-'''+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++'''
+# Packing in the rest
+generation_part1.pack(side=LEFT)
+generation_part2.pack(side=LEFT)
+canvas.pack()
+
+''''++++++++++++++++++++++++++++++++++Main Game of Life End++++++++++++++++++++++++++++++++++++'''
+
 # Frame3 subframe
 # Frame 6
-frame6 = Frame(frame3)
-frame6.pack()
+frame7 = Frame(frame3)
+frame7.pack()
 
 # Controls
-Play = Button(frame6, text = "Play", font = ('Georgia', 12), command=begin_game)
-Pause = Button(frame6, text = "Pause", font = ('Georgia', 12), command=stop_game)
-Reset = Button(frame6, text = "Reset", font = ('Georgia', 12),command=create_grid)
+Play = Button(frame7, text = "Play", font = ('Georgia', 12), command=begin_game)
+Pause = Button(frame7, text = "Pause", font = ('Georgia', 12), command=stop_game)
+Reset = Button(frame7, text = "Reset", font = ('Georgia', 12),command=create_grid)
 Play.pack(side = LEFT, padx=10)
 Pause.pack(side = LEFT, padx=10)
 Reset.pack(side = RIGHT, padx=10)
@@ -173,6 +198,8 @@ frame5 = Frame(frame1)
 frame5.pack(side = LEFT,fill=BOTH,anchor=CENTER)
 
 # Presets
+
+# Glider
 def glider():
     canvas.itemconfig(rectangles[21][4], fill="black")
     grid[21][4].switchStatus()
@@ -187,6 +214,7 @@ def glider():
 Preset1 = Button(frame4, text = "Glider", font = ('Georgia', 12), command=glider)
 Preset1.pack(anchor = W, pady=10)
 
+# Random
 def random_config():
     for i in range(len(grid)):
         for j in range(len(grid[0])):
@@ -197,6 +225,7 @@ def random_config():
 Preset2 = Button(frame4, text = "Random", font = ('Georgia', 12), command=random_config)
 Preset2.pack(anchor = W, pady=10)
 
+# Spaceship
 def spaceship():
     canvas.itemconfig(rectangles[12][32], fill="black")
     grid[12][32].switchStatus()
@@ -222,8 +251,6 @@ def spaceship():
     grid[11][30].switchStatus()
 Preset3 = Button(frame4, text = "Space Ship", font = ('Georgia', 12), command=spaceship)
 Preset3.pack(anchor = W, pady=10)
-
-
 
 # Rules
 QuoteBody = """
